@@ -13,8 +13,10 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Separate hook to handle hash fragment from OAuth redirects
-export function useHandleOAuthRedirect(setUser: (user: User | null) => void) {
+// Export all components and hooks at the end of the file
+
+// Custom hook for handling OAuth redirects
+function useHandleOAuthRedirect(setUser: (user: User | null) => void) {
   useEffect(() => {
     const handleHashFragment = async () => {
       if (
@@ -47,8 +49,8 @@ export function useHandleOAuthRedirect(setUser: (user: User | null) => void) {
   }, [setUser]);
 }
 
-// Main AuthProvider component
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// Auth Provider Component
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -65,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for changes on auth state (signed in, signed out, etc.)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -95,10 +97,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
+    // Get the current URL's origin to ensure we redirect back to the same domain
+    const currentOrigin = window.location.origin;
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/success`,
+        redirectTo: `${currentOrigin}/success`,
         queryParams: {
           access_type: "offline",
           prompt: "consent",
@@ -120,12 +125,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+// Auth Hook
+const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}
+};
+
+export { AuthProvider, useAuth };
