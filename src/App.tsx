@@ -6,6 +6,7 @@ import SignUpForm from "./components/auth/SignUpForm";
 import Dashboard from "./components/pages/dashboard";
 import Success from "./components/pages/success";
 import Home from "./components/pages/home";
+import Forum from "./components/pages/forum";
 import { AuthProvider, useAuth } from "../supabase/auth";
 import { Toaster } from "./components/ui/toaster";
 import { LoadingScreen, LoadingSpinner } from "./components/ui/loading-spinner";
@@ -45,6 +46,7 @@ function AppRoutes() {
           }
         />
         <Route path="/success" element={<Success />} />
+        <Route path="/forum/*" element={<Forum />} />
       </Routes>
       {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
     </>

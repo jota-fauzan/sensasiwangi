@@ -13,9 +13,47 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Separate hook to handle hash fragment from OAuth redirects
+export function useHandleOAuthRedirect(setUser: (user: User | null) => void) {
+  useEffect(() => {
+    const handleHashFragment = async () => {
+      if (
+        window.location.hash &&
+        window.location.hash.includes("access_token")
+      ) {
+        // The hash contains auth tokens - let Supabase handle it
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error("Error getting session:", error);
+          return;
+        }
+
+        if (data.session) {
+          setUser(data.session.user);
+          // Clear the hash fragment without reloading the page
+          window.history.replaceState(
+            null,
+            document.title,
+            window.location.pathname,
+          );
+          // Redirect to dashboard
+          window.location.href = "/dashboard";
+        }
+      }
+    };
+
+    handleHashFragment();
+  }, [setUser]);
+}
+
+// Main AuthProvider component
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Handle OAuth redirects
+  useHandleOAuthRedirect(setUser);
 
   useEffect(() => {
     // Check active sessions and sets the user

@@ -41,6 +41,26 @@ export default function LandingPage() {
               </span>
             </Link>
           </div>
+          <nav className="hidden md:flex items-center space-x-7 text-sm font-light">
+            <Link to="/forum" className="hover:text-gray-500">
+              Forum
+            </Link>
+            <Link to="/" className="hover:text-gray-500">
+              Features
+            </Link>
+            <Link to="/" className="hover:text-gray-500">
+              Documentation
+            </Link>
+            <Link to="/" className="hover:text-gray-500">
+              Components
+            </Link>
+            <Link to="/" className="hover:text-gray-500">
+              Examples
+            </Link>
+            <Link to="/" className="hover:text-gray-500">
+              Support
+            </Link>
+          </nav>
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="flex items-center gap-4">
@@ -526,7 +546,10 @@ export default function LandingPage() {
               <h4 className="font-bold mb-4">Platform</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link to="/" className="text-gray-400 hover:text-purple-400">
+                  <Link
+                    to="/forum"
+                    className="text-gray-400 hover:text-purple-400"
+                  >
                     Forum
                   </Link>
                 </li>
